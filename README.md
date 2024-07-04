@@ -21,7 +21,7 @@ For additional information:
 You can easily download the multi-temporal SEN12MS-CR-TS (and, optionally, the mono-temporal SEN12MS-CR) dataset via the shell script in [`./util/dl_data.sh`](https://github.com/PatrickTUM/UnCRtainTS/blob/main/util/dl_data.sh). Alternatively, you may download the SEN12MS-CR-TS data set (or parts of it) via the MediaTUM website [here](https://mediatum.ub.tum.de/1639953) (train split) and [here](https://mediatum.ub.tum.de/1659251) (test split), with further instructions provided in the dataset's own [dedicated repository](https://github.com/PatrickTUM/SEN12MS-CR-TS#dataset).
 
 ### Code
-Clone this repository via `git clone https://github.com/PatrickTUM/UnCRtainTS.git`.
+Clone this repository via `git clone https://github.com/Omichougule/UnCRtainTS.git`.
 
 and set up the Python environment via 
 
