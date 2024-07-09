@@ -135,4 +135,4 @@ dmypy.json
 # ignore particular folders and directories
 ./util/precomputed
 
-dataset/
+./dataset/
