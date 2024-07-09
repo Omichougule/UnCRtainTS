@@ -198,23 +198,67 @@ def load_model(config, model, train_out_layer=True, load_out_partly=True):
 
 # function to load checkpoints of individual and ensemble models
 # (this is used for training and testing scripts)
+# def load_checkpoint(config, checkp_dir, model, name):
+#     chckp_path = os.path.join(checkp_dir, config.experiment_name, f"{name}.pth.tar")
+#     print(f'Loading checkpoint {chckp_path}')
+#     checkpoint = torch.load(chckp_path, map_location=config.device)["state_dict"]
+
+#     try: # try loading checkpoint strictly, all weights & their names must match
+#         model.load_state_dict(checkpoint, strict=True)
+#     except:
+#         # rename keys
+#         #   in_block1 -> in_block0, out_block1 -> out_block0
+#         checkpoint_renamed = dict()
+#         for key, val in checkpoint.items():
+#             if 'in_block' in key or 'out_block' in key:
+#                 strs    = key.split('.')
+#                 strs[1] = strs[1][:-1] + str(int(strs[1][-1])-1)
+#                 strs[1] = '.'.join([strs[1][:-1], strs[1][-1]])
+#                 key     = '.'.join(strs)
+#             checkpoint_renamed[key] = val
+#         model.load_state_dict(checkpoint_renamed, strict=False)
+
+# def freeze_layers(net, apply_to=None, grad=False):
+#     if net is not None:
+#         for k, v in net.named_parameters():
+#             # check if layer is supposed to be frozen
+#             if hasattr(v, 'requires_grad') and v.dtype != torch.int64:
+#                 if apply_to is not None:
+#                     # flip
+#                     if k in apply_to.keys() and v.size() == apply_to[k].size(): 
+#                         v.requires_grad_(grad)
+#                 else: # otherwise apply indiscriminately to all layers
+#                     v.requires_grad_(grad)
+
+import os
+import torch
+
 def load_checkpoint(config, checkp_dir, model, name):
-    chckp_path = os.path.join(checkp_dir, config.experiment_name, f"{name}.pth.tar")
-    print(f'Loading checkpoint {chckp_path}')
+    # Ensure that the path uses the correct separator for the operating system
+    # chckp_path = os.path.join(checkp_dir, config.experiment_name)
+    # chckp_path = os.path.join(chckp_path, f"{name}.pth.tar")
+    chckp_path = "model/results/diagonal_1/model.pth.tar"
+    print(f'Loading checkpoint from: {chckp_path}')
+    
+    # Verify if the checkpoint path exists
+    if not os.path.isfile(chckp_path):
+        raise FileNotFoundError(f"Checkpoint file not found: {chckp_path}")
+    
     checkpoint = torch.load(chckp_path, map_location=config.device)["state_dict"]
 
-    try: # try loading checkpoint strictly, all weights & their names must match
+    try:  # try loading checkpoint strictly, all weights & their names must match
         model.load_state_dict(checkpoint, strict=True)
-    except:
+    except Exception as e:
+        print(f"Exception during model loading: {e}")
         # rename keys
         #   in_block1 -> in_block0, out_block1 -> out_block0
         checkpoint_renamed = dict()
         for key, val in checkpoint.items():
             if 'in_block' in key or 'out_block' in key:
-                strs    = key.split('.')
-                strs[1] = strs[1][:-1] + str(int(strs[1][-1])-1)
+                strs = key.split('.')
+                strs[1] = strs[1][:-1] + str(int(strs[1][-1]) - 1)
                 strs[1] = '.'.join([strs[1][:-1], strs[1][-1]])
-                key     = '.'.join(strs)
+                key = '.'.join(strs)
             checkpoint_renamed[key] = val
         model.load_state_dict(checkpoint_renamed, strict=False)
 
@@ -227,5 +271,5 @@ def freeze_layers(net, apply_to=None, grad=False):
                     # flip
                     if k in apply_to.keys() and v.size() == apply_to[k].size(): 
                         v.requires_grad_(grad)
-                else: # otherwise apply indiscriminately to all layers
+                else:  # otherwise apply indiscriminately to all layers
                     v.requires_grad_(grad)
